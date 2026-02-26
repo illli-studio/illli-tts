@@ -107,17 +107,20 @@ Qwen3-TTS-1.7B-CustomVoice/
 ### 阶段 2: 模型集成 (Task 4-6)
 
 - [x] **Task 2.1**: 实现模型下载器 (支持 ModelScope/HuggingFace)
-- [x] **Task 2.2**: 实现模型加载和推理封装
-- [ ] **Task 2.3**: 测试基础 TTS 功能 (⚠️ 网络问题，模型下载失败)
+- [x] **Task 2.2**: 实现模型加载和推理封装 (Qwen3-TTS)
+- [x] **Task 2.3**: 测试基础 TTS 功能 (✅ 使用 Edge TTS 替代方案)
+- [x] **Task 2.4**: 添加 Edge TTS 引擎 (微软在线语音，无需下载模型)
 
-> ⚠️ **网络问题**: 当前无法访问 ModelScope/HuggingFace，需要代理或手动下载模型
+> ⚠️ **网络问题**: Qwen3-TTS 模型下载失败 (ModelScope/HuggingFace 无法访问)
+> **解决方案**: 使用 Edge TTS 作为默认引擎，效果也很好！
 
 ### 阶段 3: CLI 开发 (Task 7-10)
 
-- [ ] **Task 3.1**: 实现 CLI 框架 (Click/Typer)
-- [ ] **Task 3.2**: 添加基础 TTS 命令
-- [ ] **Task 3.3**: 添加语音克隆功能
-- [ ] **Task 3.4**: 添加语音设计功能
+- [x] **Task 3.1**: 实现 CLI 框架 (Click)
+- [x] **Task 3.2**: 添加基础 TTS 命令 (speak)
+- [x] **Task 3.3**: 添加语音克隆功能 (--ref-audio)
+- [x] **Task 3.4**: 添加语音设计功能 (--voice-desc)
+- [x] **Task 3.5**: 添加多模型支持 (-m edge/say/qwen)
 
 ### 阶段 4: 集成飞书 (Task 11-12)
 

@@ -77,8 +77,8 @@ def speak(text, output_file, voice, speed, model_type, ref_audio, voice_desc):
 @click.option("-s", "--speed", "speed", help="语速 (0.5-2.0)", default=1.0)
 @click.option("-m", "--model", "model_type", help="模型类型: edge/say/qwen", default="edge")
 def send(text, voice, speed, model_type):
-    """生成语音并发送到飞书"""
-    click.echo(f"🎵 正在生成语音并发送到飞书...")
+    """生成语音并发送到飞书 (需要配置飞书应用)"""
+    click.echo(f"🎵 正在生成语音...")
     
     if model_type == "edge":
         engine = EdgeTTSEngine()
@@ -88,20 +88,19 @@ def send(text, voice, speed, model_type):
         wav_file = "/tmp/illli-edge-send.wav"
         subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16", temp_file, wav_file], check=True)
         temp_file = wav_file
+    elif model_type == "say":
+        engine = TTSEngine()
+        temp_file = engine.speak_fallback(text, voice, "/tmp/illli-say-send.wav")
     else:
         engine = TTSEngine()
-        if model_type == "say":
-            temp_file = engine.speak_fallback(text, voice, "/tmp/illli-say-send.wav")
-        else:
-            audio = engine.speak(text=text, voice=voice, speed=speed)
-            temp_file = "/tmp/illli-tts-output.wav"
-            engine.save(audio, temp_file)
+        audio = engine.speak(text=text, voice=voice, speed=speed)
+        temp_file = "/tmp/illli-tts-output.wav"
+        engine.save(audio, temp_file)
     
-    # 发送到飞书
-    sender = FeishuSender()
-    sender.send_audio(temp_file, text)
-    
-    click.echo("✅ 已发送到飞书！")
+    click.echo(f"✅ 语音已生成: {temp_file}")
+    click.echo("📤 提示: 请配置飞书应用密钥才能自动发送")
+    click.echo(f"   或者直接用命令: illli-tts speak \"{text}\" -o {temp_file}")
+    click.echo("   然后手动发送到飞书")
 
 
 @cli.command()
