@@ -5,6 +5,7 @@ import click
 from pathlib import Path
 
 from .tts import TTSEngine
+from .edge_tts import EdgeTTSEngine
 from .models import ModelManager
 from .voices import VoiceManager
 from .sender import FeishuSender
@@ -23,49 +24,78 @@ def cli():
 @click.option("-o", "--output", "output_file", help="输出音频文件路径", default="output.wav")
 @click.option("-v", "--voice", "voice", help="音色名称", default="female_young")
 @click.option("-s", "--speed", "speed", help="语速 (0.5-2.0)", default=1.0)
+@click.option("-m", "--model", "model_type", help="模型类型: edge/qwen/say", default="edge")
 @click.option("--ref-audio", "ref_audio", help="参考音频路径 (用于语音克隆)", default=None)
 @click.option("--voice-desc", "voice_desc", help="语音描述 (用于语音设计)", default=None)
-@click.option("--fallback", is_flag=True, help="使用 macOS say 命令 (无需下载模型)")
-def speak(text, output_file, voice, speed, ref_audio, voice_desc, fallback):
+def speak(text, output_file, voice, speed, model_type, ref_audio, voice_desc):
     """将文字转为语音"""
-    engine = TTSEngine()
     
-    if fallback:
-        # 使用 macOS 内置语音
+    if model_type == "edge":
+        # 使用 Edge TTS (默认，推荐)
+        click.echo(f"🎵 使用 Edge TTS ({voice})...")
+        engine = EdgeTTSEngine()
+        output_path = engine.speak(text, voice, speed, output_file=output_file)
+        
+        # 转换为 WAV
+        if output_path.endswith(".mp3"):
+            import subprocess
+            wav_path = output_path.replace(".mp3", ".wav")
+            subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16", output_path, wav_path], check=True)
+            output_file = wav_path
+        
+        click.echo(f"✅ 已保存到: {output_file}")
+        
+    elif model_type == "say":
+        # 使用 macOS say 命令
         click.echo(f"🎤 使用 macOS say ({voice})...")
+        engine = TTSEngine()
         output_file = engine.speak_fallback(text, voice, output_file)
         click.echo(f"✅ 已保存到: {output_file}")
-        return
+        
+    elif model_type == "qwen":
+        # 使用 Qwen3-TTS 模型 (需要下载模型)
+        click.echo(f"🧠 使用 Qwen3-TTS 模型 ({voice})...")
+        engine = TTSEngine()
+        audio = engine.speak(
+            text=text,
+            voice=voice,
+            speed=speed,
+            ref_audio=ref_audio,
+            voice_desc=voice_desc
+        )
+        engine.save(audio, output_file)
+        click.echo(f"✅ 已保存到: {output_file}")
     
-    click.echo(f"🎵 正在生成语音: {text[:50]}...")
-    
-    engine = TTSEngine()
-    audio = engine.speak(
-        text=text,
-        voice=voice,
-        speed=speed,
-        ref_audio=ref_audio,
-        voice_desc=voice_desc
-    )
-    
-    engine.save(audio, output_file)
-    click.echo(f"✅ 已保存到: {output_file}")
+    else:
+        click.echo(f"❌ 未知模型类型: {model_type}")
+        click.echo("可用类型: edge, say, qwen")
 
 
 @cli.command()
 @click.argument("text")
 @click.option("-v", "--voice", "voice", help="音色名称", default="female_young")
 @click.option("-s", "--speed", "speed", help="语速 (0.5-2.0)", default=1.0)
-def send(text, voice, speed):
+@click.option("-m", "--model", "model_type", help="模型类型: edge/say/qwen", default="edge")
+def send(text, voice, speed, model_type):
     """生成语音并发送到飞书"""
     click.echo(f"🎵 正在生成语音并发送到飞书...")
     
-    engine = TTSEngine()
-    audio = engine.speak(text=text, voice=voice, speed=speed)
-    
-    # 保存到临时文件
-    temp_file = "/tmp/illli-tts-output.wav"
-    engine.save(audio, temp_file)
+    if model_type == "edge":
+        engine = EdgeTTSEngine()
+        temp_file = engine.speak(text, voice, speed, output_file="/tmp/illli-edge-send.mp3")
+        # 转换 MP3 到 WAV
+        import subprocess
+        wav_file = "/tmp/illli-edge-send.wav"
+        subprocess.run(["afconvert", "-f", "WAVE", "-d", "LEI16", temp_file, wav_file], check=True)
+        temp_file = wav_file
+    else:
+        engine = TTSEngine()
+        if model_type == "say":
+            temp_file = engine.speak_fallback(text, voice, "/tmp/illli-say-send.wav")
+        else:
+            audio = engine.speak(text=text, voice=voice, speed=speed)
+            temp_file = "/tmp/illli-tts-output.wav"
+            engine.save(audio, temp_file)
     
     # 发送到飞书
     sender = FeishuSender()
