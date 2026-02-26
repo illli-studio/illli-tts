@@ -100,15 +100,17 @@ Qwen3-TTS-1.7B-CustomVoice/
 
 ### 阶段 1: 项目初始化 (Task 1-3)
 
-- [ ] **Task 1.1**: 创建 GitHub 仓库 `illli-studio/illli-tts`
-- [ ] **Task 1.2**: 初始化 Python 项目结构 (pyproject.toml)
-- [ ] **Task 1.3**: 配置开发环境 (Python 3.10+, CUDA)
+- [x] **Task 1.1**: 创建 GitHub 仓库 `illli-studio/illli-tts`
+- [x] **Task 1.2**: 初始化 Python 项目结构 (pyproject.toml)
+- [x] **Task 1.3**: 配置开发环境 (Python 3.10+, CUDA)
 
 ### 阶段 2: 模型集成 (Task 4-6)
 
-- [ ] **Task 2.1**: 实现模型下载器 (支持 ModelScope/HuggingFace)
-- [ ] **Task 2.2**: 实现模型加载和推理封装
-- [ ] **Task 2.3**: 测试基础 TTS 功能
+- [x] **Task 2.1**: 实现模型下载器 (支持 ModelScope/HuggingFace)
+- [x] **Task 2.2**: 实现模型加载和推理封装
+- [ ] **Task 2.3**: 测试基础 TTS 功能 (⚠️ 网络问题，模型下载失败)
+
+> ⚠️ **网络问题**: 当前无法访问 ModelScope/HuggingFace，需要代理或手动下载模型
 
 ### 阶段 3: CLI 开发 (Task 7-10)
 
