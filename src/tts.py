@@ -18,7 +18,17 @@ class TTSEngine:
         self.model_manager = ModelManager(self.config)
         self.model = None
         self.processor = None
-        self.device = "cuda" if torch.cuda.is_available() else "cpu"
+        
+        # 确定设备: CUDA > MPS (Apple Silicon) > CPU
+        if torch.cuda.is_available():
+            self.device = "cuda"
+            print("💡 使用 NVIDIA GPU 加速")
+        elif torch.backends.mps.is_available():
+            self.device = "mps"
+            print("💡 使用 Apple MPS (Metal) 加速 - M4/M3/M2 芯片")
+        else:
+            self.device = "cpu"
+            print("💡 使用 CPU (较慢)")
     
     def _load_model(self):
         """加载模型"""
@@ -27,10 +37,19 @@ class TTSEngine:
         
         model_path = self.model_manager.get_model_path()
         if model_path is None:
-            raise RuntimeError(
-                "模型未下载！请先运行 'illli-tts download' 下载模型，"
-                "或者设置 ModelScope/HuggingFace API key"
-            )
+            # 尝试下载
+            print("📥 模型未找到，尝试下载...")
+            try:
+                model_path = self.model_manager.download()
+            except Exception as e:
+                raise RuntimeError(
+                    f"模型下载失败: {e}\n\n"
+                    "解决方案:\n"
+                    "1. 配置代理后重新运行: illli-tts download\n"
+                    "2. 手动下载模型放到: ./models/Qwen3-TTS-1.7B/\n"
+                    "   - HuggingFace: https://huggingface.co/Qwen/Qwen3-TTS-1.7B\n"
+                    "   - ModelScope: https://modelscope.cn/models/qwen/Qwen3-TTS-1.7B"
+                )
         
         print(f"🔄 加载模型 from {model_path}...")
         
@@ -44,7 +63,7 @@ class TTSEngine:
             self.model = AutoModelForCausalLM.from_pretrained(
                 str(model_path),
                 trust_remote_code=True,
-                torch_dtype=torch.float16 if self.device == "cuda" else torch.float32
+                torch_dtype=torch.float16 if self.device in ["cuda", "mps"] else torch.float32
             )
             self.model.to(self.device)
             self.model.eval()
@@ -110,3 +129,44 @@ class TTSEngine:
     def stream(self, text: str, voice: str = "female_young"):
         """流式播放 (需要实现)"""
         raise NotImplementedError("流式播放功能待实现")
+    
+    def speak_fallback(self, text: str, voice: str = "female_young", output_path: str = "/tmp/illli-tts-fallback.wav") -> str:
+        """使用 macOS say 命令作为备选方案"""
+        import subprocess
+        
+        # 映射音色到 macOS 语音
+        voice_map = {
+            "female_young": "Samantha",
+            "male_young": "Daniel", 
+            "female_mature": "Victoria",
+            "male_mature": "James",
+            "female_child": "Ellen",
+            "male_child": "John"
+        }
+        
+        macos_voice = voice_map.get(voice, "Samantha")
+        
+        # 先生成 AIFF 文件
+        aiff_path = "/tmp/illli-tts-temp.aiff"
+        
+        # 使用 say 命令生成语音
+        subprocess.run([
+            "say",
+            "-v", macos_voice,
+            "-o", aiff_path,
+            text
+        ], check=True)
+        
+        # 转换格式为 WAV
+        subprocess.run([
+            "afconvert",
+            "-f", "WAVE",
+            "-d", "LEI16",
+            aiff_path,
+            output_path
+        ], check=True)
+        
+        # 删除临时文件
+        Path(aiff_path).unlink(missing_ok=True)
+        
+        return output_path

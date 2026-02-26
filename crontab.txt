@@ -1,0 +1,13 @@
+# illli-tts 定时任务
+
+# 阶段 2: 模型集成 (22:00-23:00)
+0 22 * * * cd ~/.openclaw/workspace/illli-tts && git pull origin main
+
+# 阶段 3: CLI 开发 (23:00-24:00)
+0 23 * * * cd ~/.openclaw/workspace/illli-tts && git pull origin main
+
+# 阶段 4: 飞书集成 (00:00-01:00)
+0 0 * * * cd ~/.openclaw/workspace/illli-tts && git pull origin main
+
+# 阶段 5: 优化与发布 (01:00-02:00)
+0 1 * * * cd ~/.openclaw/workspace/illli-tts && git pull origin main

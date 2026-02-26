@@ -12,8 +12,10 @@ class ModelManager:
     """模型下载管理器"""
     
     MODEL_IDS = {
-        "modelscope": "qwen/Qwen3-TTS-1.7B-CustomVoice",
-        "huggingface": "Qwen/Qwen3-TTS-1.7B-CustomVoice"
+        # ModelScope 模型
+        "modelscope": "qwen/Qwen3-TTS-1.7B",
+        # HuggingFace 模型 - 支持 CustomVoice 的版本
+        "huggingface": "Qwen/Qwen3-TTS-1.7B"
     }
     
     # 需要下载的文件列表

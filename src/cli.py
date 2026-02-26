@@ -25,8 +25,18 @@ def cli():
 @click.option("-s", "--speed", "speed", help="语速 (0.5-2.0)", default=1.0)
 @click.option("--ref-audio", "ref_audio", help="参考音频路径 (用于语音克隆)", default=None)
 @click.option("--voice-desc", "voice_desc", help="语音描述 (用于语音设计)", default=None)
-def speak(text, output_file, voice, speed, ref_audio, voice_desc):
+@click.option("--fallback", is_flag=True, help="使用 macOS say 命令 (无需下载模型)")
+def speak(text, output_file, voice, speed, ref_audio, voice_desc, fallback):
     """将文字转为语音"""
+    engine = TTSEngine()
+    
+    if fallback:
+        # 使用 macOS 内置语音
+        click.echo(f"🎤 使用 macOS say ({voice})...")
+        output_file = engine.speak_fallback(text, voice, output_file)
+        click.echo(f"✅ 已保存到: {output_file}")
+        return
+    
     click.echo(f"🎵 正在生成语音: {text[:50]}...")
     
     engine = TTSEngine()
