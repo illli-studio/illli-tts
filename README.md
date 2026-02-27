@@ -1,18 +1,160 @@
 # 🎤 illli-tts
 
-基于 Qwen3-TTS 的文字转语音工具，支持语音克隆、语音设计等功能。
+[English](#english) | [中文](#中文)
 
-## 功能特性
+illli-tts is a powerful text-to-speech tool based on Qwen3-TTS, supporting voice cloning, voice design, and more.
 
-- 🧠 **Qwen3-TTS** - 本地离线模型，支持 9 种预设音色
-- 🌐 **Edge TTS** - 微软在线语音，更多音色选择
-- 🎭 **语音设计** - 通过文字描述控制音色和语气
-- 🔊 **语音克隆** - 使用参考音频克隆声音 (需要 Base 模型)
-- 📦 **批量合成** - 批量文本转语音
-- 🎨 **音频后处理** - 调整语速、音调、混响等
-- 📡 **API 服务** - HTTP API 接口
-- 🎨 **Web 界面** - Gradio 可视化界面
-- 📝 **历史记录** - 查看和管理生成历史
+---
+
+## ✨ Features | 功能特性
+
+- 🧠 **Qwen3-TTS** - Local offline model, 9 preset voices
+- 🌐 **Edge TTS** - Microsoft online voices, more options
+- 🎭 **Voice Design** - Control voice style with text descriptions
+- 🔊 **Voice Cloning** - Clone voice from reference audio (requires Base model)
+- 📦 **Batch Synthesis** - Batch text-to-speech
+- 🎨 **Audio Processing** - Speed, pitch, reverb adjustment
+- 📡 **API Service** - HTTP API interface
+- 🎨 **Web UI** - Gradio visualization interface
+- 📝 **History** - View and manage generation history
+- 📤 **Feishu Integration** - Send audio to Feishu
+
+---
+
+## 🚀 Quick Start | 快速开始
+
+### Installation | 安装
+
+```bash
+cd illli-tts
+source .venv/bin/activate
+pip install -e .
+```
+
+### Basic Usage | 基本用法
+
+```bash
+# Text-to-speech
+illli-tts speak "你好" -o output.wav
+
+# With voice design
+illli-tts speak "你好" --instruct "用温柔的语气" -m qwen
+
+# Batch synthesis
+illli-tts batch text.txt -o output/
+
+# Send to Feishu
+illli-tts speak "你好" --send-to-feishu
+
+# Audio processing
+illli-tts process input.wav --pitch 2 --reverb
+
+# Start API server
+illli-tts serve -p 8080
+
+# Start Web UI
+illli-tts webui -p 7860
+
+# View history
+illli-tts history
+```
+
+---
+
+## 📋 Commands | 命令列表
+
+| Command | Description | 说明 |
+|---------|-------------|------|
+| `speak` | Text-to-speech | 语音合成 |
+| `batch` | Batch synthesis | 批量合成 |
+| `clone` | Voice cloning | 语音克隆 |
+| `preview` | Quick preview & play | 快速预览 |
+| `test` | Test all voices | 测试所有音色 |
+| `play` | Play audio | 播放音频 |
+| `send` | Send to Feishu | 发送到飞书 |
+| `convert` | Format conversion | 格式转换 |
+| `resample` | Adjust sample rate | 调整采样率 |
+| `process` | Audio post-processing | 后处理 |
+| `merge` | Merge audio files | 合并音频 |
+| `trim` | Trim audio | 裁剪音频 |
+| `mix` | Mix with background music | 混合背景音乐 |
+| `serve` | HTTP API server | HTTP API 服务 |
+| `webui` | Web interface | Web 界面 |
+| `history` | View history | 历史记录 |
+| `status` | View status | 状态查看 |
+| `config` | Configuration | 配置管理 |
+| `voices` | List voices | 音色列表 |
+| `info` | Project info | 项目信息 |
+| `count` | Text statistics | 文本统计 |
+| `clean` | Text cleanup | 文本清理 |
+
+---
+
+## 🎭 Available Voices | 可用音色
+
+| ID | Name | Description |
+|----|------|--------------|
+| `female_young` | Young Female | Vivian - 明亮清脆 |
+| `female_cute` | Cute Female | Serena - 温柔柔和 |
+| `male_young` | Young Male | Dylan - 北京话清澈 |
+| `male_mature` | Mature Male | Uncle_Fu - 成熟男性 |
+| `male_sichuan` | Sichuan Male | Eric - 四川话男性 |
+| `english_male` | English Male | Ryan - 英语男性 |
+| `english_male_2` | English Male 2 | Aiden - 英语男性2 |
+| `japanese_female` | Japanese Female | Ono_Anna - 日语女性 |
+| `korean_female` | Korean Female | Sohee - 韩语女性 |
+
+---
+
+## ⚙️ Configuration | 配置
+
+```bash
+# View config
+illli-tts config all
+
+# Set config
+illli-tts config model.cache_dir ./models
+```
+
+---
+
+## 📁 Project Structure | 项目结构
+
+```
+illli-tts/
+├── src/
+│   ├── cli.py              # CLI entry
+│   ├── tts.py             # Qwen3-TTS engine
+│   ├── edge_tts_engine.py  # Edge TTS engine
+│   ├── api.py              # HTTP API
+│   ├── webui.py            # Web UI
+│   ├── processor.py        # Audio processing
+│   ├── history.py          # History
+│   ├── sender.py           # Feishu sender
+│   └── config.py           # Configuration
+├── models/                  # Model files
+├── README.md
+└── TODO.md
+```
+
+---
+
+## 🔗 Links | 链接
+
+- GitHub: https://github.com/illli-studio/illli-tts
+- Qwen3-TTS: https://github.com/QwenLM/Qwen3-TTS
+
+---
+
+## 📄 License
+
+MIT
+
+---
+
+# 中文
+
+illli-tts 是一个基于 Qwen3-TTS 的强大文字转语音工具，支持语音克隆、语音设计等功能。
 
 ## 安装
 
@@ -24,13 +166,11 @@ pip install -e .
 
 ## 快速开始
 
-### 命令行
-
 ```bash
-# 基本语音合成
+# 语音合成
 illli-tts speak "你好" -o output.wav
 
-# 使用语音设计
+# 语音设计
 illli-tts speak "你好" --instruct "用温柔的语气" -m qwen
 
 # 批量合成
@@ -47,65 +187,28 @@ illli-tts serve -p 8080
 
 # 启动 Web 界面
 illli-tts webui -p 7860
-
-# 查看历史
-illli-tts history
 ```
 
-### API
+## 功能列表
 
-```bash
-# 启动服务
-illli-tts serve -p 8080
-
-# 调用
-curl -X POST http://localhost:8080/tts \
-  -H "Content-Type: application/json" \
-  -d '{"text": "你好", "voice": "female_young", "model": "qwen"}'
-```
+- Qwen3-TTS 本地离线模型
+- Edge TTS 微软在线语音
+- 语音设计（控制语气）
+- 语音克隆
+- 批量合成
+- 音频后处理
+- HTTP API
+- Web 界面
+- 历史记录
+- 飞书集成
 
 ## 可用音色
 
-| ID | 名称 | 描述 |
-|---|---|---|
-| female_young | 年轻女性 | Vivian - 明亮清脆 |
-| female_cute | 可爱女性 | Serena - 温柔柔和 |
-| male_young | 年轻男性 | Dylan - 北京话清澈 |
-| male_mature | 成熟男性 | Uncle_Fu - 低沉成熟 |
-| male_sichuan | 四川男性 | Eric - 充满活力 |
-| english_male | 英语男性 | Ryan - 节奏感强 |
-| english_male_2 | 英语男性2 | Aiden - 阳光清晰 |
-| japanese_female | 日语女性 | Ono_Anna - 轻快活泼 |
-| korean_female | 韩语女性 | Sohee - 温暖情感 |
-
-## 配置
-
-```bash
-# 查看配置
-illli-tts config all
-
-# 设置配置
-illli-tts config model.cache_dir ./models
-```
-
-## 项目结构
-
-```
-illli-tts/
-├── src/
-│   ├── cli.py          # CLI 入口
-│   ├── tts.py          # Qwen3-TTS 引擎
-│   ├── edge_tts_engine.py  # Edge TTS 引擎
-│   ├── api.py          # HTTP API
-│   ├── webui.py        # Web 界面
-│   ├── processor.py     # 音频后处理
-│   ├── history.py       # 历史记录
-│   ├── sender.py        # 飞书发送
-│   └── config.py        # 配置管理
-├── models/              # 模型文件
-└── README.md
-```
-
-## License
-
-MIT
+- female_young (Vivian) - 年轻女性
+- female_cute (Serena) - 可爱女性
+- male_young (Dylan) - 年轻男性
+- male_mature (Uncle_Fu) - 成熟男性
+- male_sichuan (Eric) - 四川男性
+- english_male (Ryan) - 英语男性
+- japanese_female (Ono_Anna) - 日语女性
+- korean_female (Sohee) - 韩语女性
