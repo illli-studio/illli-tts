@@ -1,7 +1,7 @@
 """Edge TTS 引擎模块 - 无需下载模型"""
 
 import asyncio
-import edge_tts
+import edge_tts as edge_tts_lib
 import os
 from pathlib import Path
 from typing import Optional, Union
@@ -36,7 +36,7 @@ class EdgeTTSEngine:
         """异步生成语音"""
         voice_name = self.VOICES.get(voice, self.VOICES["female_young"])
         
-        communicate = edge_tts.Communicate(text, voice_name, rate=rate, pitch=pitch)
+        communicate = edge_tts_lib.Communicate(text, voice_name, rate=rate, pitch=pitch)
         await communicate.save(output_path)
         
         return output_path

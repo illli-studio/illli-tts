@@ -1,142 +1,111 @@
-# 🎙️ illli-tts
+# 🎤 illli-tts
 
-基于 Qwen3-TTS 的 CLI 文字转语音工具 | 支持 Edge TTS 和语音克隆
+基于 Qwen3-TTS 的文字转语音工具，支持语音克隆、语音设计等功能。
 
-## ✨ 特性
+## 功能特性
 
-- 🎵 **高质量 TTS** - 基于 Qwen3-TTS 模型
-- 🔊 **多引擎支持** - Edge TTS / macOS say / Qwen3-TTS
-- 🎭 **多种音色** - 年轻女性、成熟男性、童声等
-- 🌍 **多语言** - 中文、英文、日语、韩语等
-- 📤 **飞书集成** - 一键发送语音到飞书
-- 🍎 **Mac 原生支持** - 完美支持 Apple Silicon (M1/M2/M3/M4)
+- 🧠 **Qwen3-TTS** - 本地离线模型，支持 9 种预设音色
+- 🌐 **Edge TTS** - 微软在线语音，更多音色选择
+- 🎭 **语音设计** - 通过文字描述控制音色和语气
+- 🔊 **语音克隆** - 使用参考音频克隆声音 (需要 Base 模型)
+- 📦 **批量合成** - 批量文本转语音
+- 🎨 **音频后处理** - 调整语速、音调、混响等
+- 📡 **API 服务** - HTTP API 接口
+- 🎨 **Web 界面** - Gradio 可视化界面
+- 📝 **历史记录** - 查看和管理生成历史
 
-## 🚀 快速开始
-
-### 安装
+## 安装
 
 ```bash
-# 克隆项目
-git clone https://github.com/illli-studio/illli-tts.git
 cd illli-tts
-
-# 创建虚拟环境
-python3 -m venv .venv
 source .venv/bin/activate
-
-# 安装依赖
 pip install -e .
 ```
 
-### 使用方法
+## 快速开始
+
+### 命令行
 
 ```bash
-# 基础用法 (默认 Edge TTS)
-illli-tts speak "你好，世界"
+# 基本语音合成
+illli-tts speak "你好" -o output.wav
 
-# 指定音色
-illli-tts speak "你好" -v male_young
-illli-tts speak "你好" -v female_mature
+# 使用语音设计
+illli-tts speak "你好" --instruct "用温柔的语气" -m qwen
 
-# 调整语速 (0.5-2.0)
-illli-tts speak "你好" -s 1.5
+# 批量合成
+illli-tts batch text.txt -o output/
 
-# 指定输出文件
-illli-tts speak "你好" -o my_voice.wav
+# 发送到飞书
+illli-tts speak "你好" --send-to-feishu
 
-# 使用不同引擎
-illli-tts speak "你好" -m edge   # 微软 Edge (默认，推荐)
-illli-tts speak "你好" -m say    # macOS say
-illli-tts speak "你好" -m qwen   # Qwen3-TTS (需要下载模型)
+# 音频后处理
+illli-tts process input.wav --pitch 2 --reverb
 
-# 生成并发送到飞书
-illli-tts send "你好"
+# 启动 API 服务
+illli-tts serve -p 8080
 
-# 查看可用音色
-illli-tts voices
+# 启动 Web 界面
+illli-tts webui -p 7860
 
-# 查看状态
-illli-tts status
+# 查看历史
+illli-tts history
 ```
 
-## 🎭 可用音色
-
-| 音色 ID | 名称 | 描述 |
-|---------|------|------|
-| female_young | 年轻女性 | 温柔甜美的女声 |
-| male_young | 年轻男性 | 清澈干净的男声 |
-| female_mature | 成熟女性 | 成熟稳重的女声 |
-| male_mature | 成熟男性 | 成熟稳重的男声 |
-| female_child | 小女孩 |可爱的小女孩声音 |
-| male_child | 小男孩 | 活泼的小男孩声音 |
-
-## 🧠 Qwen3-TTS 模型下载
-
-由于网络原因，可能需要手动下载模型：
+### API
 
 ```bash
-# 方法 1: 配置代理
-export HTTP_PROXY=http://127.0.0.1:7890
-export HTTPS_PROXY=http://127.0.0.1:7890
-illli-tts download
+# 启动服务
+illli-tts serve -p 8080
 
-# 方法 2: 手动下载
-# 1. 访问: https://modelscope.cn/models/qwen/Qwen3-TTS-1.7B
-# 2. 下载模型文件
-# 3. 放到: ./models/Qwen3-TTS-1.7B/
+# 调用
+curl -X POST http://localhost:8080/tts \
+  -H "Content-Type: application/json" \
+  -d '{"text": "你好", "voice": "female_young", "model": "qwen"}'
 ```
 
-## 🔧 配置
+## 可用音色
 
-配置文件: `~/.illli-tts/config.yaml`
+| ID | 名称 | 描述 |
+|---|---|---|
+| female_young | 年轻女性 | Vivian - 明亮清脆 |
+| female_cute | 可爱女性 | Serena - 温柔柔和 |
+| male_young | 年轻男性 | Dylan - 北京话清澈 |
+| male_mature | 成熟男性 | Uncle_Fu - 低沉成熟 |
+| male_sichuan | 四川男性 | Eric - 充满活力 |
+| english_male | 英语男性 | Ryan - 节奏感强 |
+| english_male_2 | 英语男性2 | Aiden - 阳光清晰 |
+| japanese_female | 日语女性 | Ono_Anna - 轻快活泼 |
+| korean_female | 韩语女性 | Sohee - 温暖情感 |
 
-```yaml
-model:
-  name: "Qwen3-TTS-1.7B"
-  download_source: "modelscope"
-  cache_dir: "./models"
-
-tts:
-  default_language: "zh"
-  default_speed: 1.0
-  default_voice: "female_young"
-
-feishu:
-  enabled: false
-```
-
-## 📋 命令列表
-
-| 命令 | 描述 |
-|------|------|
-| `speak` | 文字转语音 |
-| `send` | 生成语音并发送到飞书 |
-| `download` | 下载 Qwen3-TTS 模型 |
-| `voices` | 列出所有可用音色 |
-| `status` | 查看状态 |
-
-## 🐳 Docker 部署
+## 配置
 
 ```bash
-docker build -t illli-tts .
-docker run -it illli-tts speak "你好"
+# 查看配置
+illli-tts config all
+
+# 设置配置
+illli-tts config model.cache_dir ./models
 ```
 
-## 📦 依赖
+## 项目结构
 
-- Python 3.10+
-- PyTorch 2.0+ (用于 Qwen3-TTS)
-- edge-tts (用于 Edge TTS)
-- click (CLI 框架)
+```
+illli-tts/
+├── src/
+│   ├── cli.py          # CLI 入口
+│   ├── tts.py          # Qwen3-TTS 引擎
+│   ├── edge_tts_engine.py  # Edge TTS 引擎
+│   ├── api.py          # HTTP API
+│   ├── webui.py        # Web 界面
+│   ├── processor.py     # 音频后处理
+│   ├── history.py       # 历史记录
+│   ├── sender.py        # 飞书发送
+│   └── config.py        # 配置管理
+├── models/              # 模型文件
+└── README.md
+```
 
-## 📄 许可证
+## License
 
-MIT License
-
-## 👤 作者
-
-illli Studio
-
----
-
-> 💡 **提示**: 使用 `-m edge` 可以获得最好的中文语音效果，无需下载大模型！
+MIT
